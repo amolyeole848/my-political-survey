@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Auto-Fill Location Form</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script>
+    <script>
+      function getLocation() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(showPosition);
+        } else {
+          alert("Geolocation is not supported by this browser.");
+        }
+      }
+
+      function showPosition(position) {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        document.getElementById("location").value = `Latitude: ${lat}, Longitude: ${lng}`;
+      }
+
+      function submitForm() {
+        const form = document.forms["surveyForm"];
+        const location = document.getElementById("location").value;
+        const url = "https://docs.google.com/forms/d/e/YOUR_FORM_ID/formResponse";
+        const params = new URLSearchParams(new FormData(form)).toString();
+
+        fetch(`${url}?${params}`, {
+          method: "POST",
+          mode: "no-cors"
+        }).then(response => {
+          alert("Form submitted successfully!");
+        }).catch(error => {
+          alert("Form submission failed!");
+        });
+        return false;
+      }
+    </script>
+  </head>
+  <body onload="getLocation()">
+    <form name="surveyForm" onsubmit="return submitForm();">
+      <label for="location">Location:</label>
+      <input type="text" id="location" name="entry.LOCATION_FIELD_ID" readonly><br><br>
+      <input type="submit" value="Submit">
+    </form>
+  </body>
+</html>
